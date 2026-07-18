@@ -16,6 +16,7 @@ public class ProductService{
     public ProductResponse createProduct(ProductRequest productRequest){
         Product  product = mapRequestToProduct(productRequest);
         Product savedProduct = productRepository.save(product);
+        System.out.println(savedProduct);
         return mapProductToResponse(savedProduct);
     }
 
