@@ -8,6 +8,7 @@ import com.app.ecommerce.models.User;
 import com.app.ecommerce.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,6 +37,12 @@ public class UserService {
         User user = mapRequestToUser(request);
         userRepository.save(user);
         return "User Created  Successfully";
+    }
+
+    @Transactional
+    public String  updateUser(UserRequest request){
+        mapRequestToUser(request);
+        return "User Updated Successfully";
     }
 
     public UserResponse mapUserToUserResponse(User user){
