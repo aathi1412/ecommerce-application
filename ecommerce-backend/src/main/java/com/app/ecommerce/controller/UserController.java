@@ -1,5 +1,6 @@
 package com.app.ecommerce.controller;
 
+import com.app.ecommerce.dto.user.UserRequest;
 import com.app.ecommerce.dto.user.UserResponse;
 import com.app.ecommerce.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -20,5 +21,12 @@ public class UserController {
         List<UserResponse> users = userService.getAllUser();
         return ResponseEntity.ok(users);
     }
+
+    @GetMapping("/{email}")
+    public ResponseEntity<UserResponse> getUser(@PathVariable String email){
+        UserResponse response=userService.getUser(email);
+        return ResponseEntity.ok(response);
+    }
+
 
 }
