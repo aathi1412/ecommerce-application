@@ -1,5 +1,6 @@
 package com.app.ecommerce.service;
 
+import com.app.ecommerce.dto.user.UserRequest;
 import com.app.ecommerce.dto.user.UserResponse;
 import com.app.ecommerce.exceptions.UserNotFoundException;
 import com.app.ecommerce.models.Address;
@@ -31,6 +32,12 @@ public class UserService {
         return mapUserToUserResponse(user);
     }
 
+    public String createUser(UserRequest request){
+        User user = mapRequestToUser(request);
+        userRepository.save(user);
+        return "User Created  Successfully";
+    }
+
     public UserResponse mapUserToUserResponse(User user){
         return UserResponse.builder()
                 .firstName(user.getFirstName())
@@ -46,5 +53,24 @@ public class UserService {
                         .build()
                 )
                 .build();
+    }
+
+    public User mapRequestToUser(UserRequest request){
+        return User.builder()
+                .firstName(request.firstName())
+                .lastName(request.lastName())
+                .email(request.email())
+                .password(request.password())
+                .phone(request.phone())
+                .address(Address.builder()
+                        .street(request.address().getStreet())
+                        .city(request.address().getCity())
+                        .state(request.address().getState())
+                        .country(request.address().getCountry())
+                        .zipcode(request.address().getZipcode())
+                        .build()
+                )
+                .build();
+
     }
 }
