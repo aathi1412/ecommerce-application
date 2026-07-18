@@ -32,8 +32,7 @@ public class User {
 
     private String phone;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "address_id", foreignKey = @ForeignKey(name = "FK_Address_user"))
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Address address;
 
     @CreationTimestamp

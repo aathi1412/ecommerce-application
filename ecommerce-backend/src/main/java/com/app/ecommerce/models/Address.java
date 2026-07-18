@@ -20,7 +20,7 @@ public class Address {
     private String country;
     private String zipcode;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "FK_address_user"))
     private User user;
 }
