@@ -29,6 +29,8 @@ public class Product {
     private Integer stockQuantity;
     private String category;
     private String imageUrl;
+
+    @Builder.Default
     private Boolean active = true;
 
     @CreationTimestamp
