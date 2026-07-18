@@ -33,6 +33,11 @@ public class UserController {
         String response = userService.createUser(request);
         return ResponseEntity.ok(response);
     }
-    
+
+    @PutMapping("/update")
+    public ResponseEntity<String> updateUser(@RequestBody UserRequest request){
+        String response = userService.updateUser(request);
+        return ResponseEntity.ok(response);
+    }
 
 }
