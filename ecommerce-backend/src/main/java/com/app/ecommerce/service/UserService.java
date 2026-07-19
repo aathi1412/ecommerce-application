@@ -1,5 +1,6 @@
 package com.app.ecommerce.service;
 
+import com.app.ecommerce.dto.user.AddressDTO;
 import com.app.ecommerce.dto.user.UserRequest;
 import com.app.ecommerce.dto.user.UserResponse;
 import com.app.ecommerce.exceptions.UserNotFoundException;
@@ -47,37 +48,41 @@ public class UserService {
 
     public UserResponse mapUserToUserResponse(User user){
         return UserResponse.builder()
-                .firstName(user.getFirstName())
-                .lastName(user.getLastName())
-                .email(user.getEmail())
-                .phone(user.getPhone())
-                .address(Address.builder()
-                        .street(user.getAddress().getStreet())
-                        .city(user.getAddress().getCity())
-                        .state(user.getAddress().getState())
-                        .country(user.getAddress().getCountry())
-                        .zipcode(user.getAddress().getZipcode())
-                        .build()
-                )
-                .build();
+                        .id(user.getId())
+                        .firstName(user.getFirstName())
+                        .lastName(user.getLastName())
+                        .email(user.getEmail())
+                        .phone(user.getPhone())
+                        .role(user.getRole())
+                        .address(AddressDTO.builder()
+                                    .street(user.getAddress().getStreet())
+                                    .city(user.getAddress().getCity())
+                                    .state(user.getAddress().getState())
+                                    .country(user.getAddress().getCountry())
+                                    .zipcode(user.getAddress().getZipcode())
+                                    .build())
+                        .build();
     }
 
+
     public User mapRequestToUser(UserRequest request){
-        return User.builder()
+        User user = User.builder()
                 .firstName(request.firstName())
                 .lastName(request.lastName())
                 .email(request.email())
                 .password(request.password())
                 .phone(request.phone())
-                .address(Address.builder()
-                        .street(request.address().getStreet())
-                        .city(request.address().getCity())
-                        .state(request.address().getState())
-                        .country(request.address().getCountry())
-                        .zipcode(request.address().getZipcode())
-                        .build()
-                )
                 .build();
 
+        Address address = Address.builder()
+                    .street(request.address().getStreet())
+                    .city(request.address().getCity())
+                    .state(request.address().getState())
+                    .country(request.address().getCountry())
+                    .zipcode(request.address().getZipcode())
+                    .build();
+
+        user.setAddress(address);
+        return  user;
     }
 }
