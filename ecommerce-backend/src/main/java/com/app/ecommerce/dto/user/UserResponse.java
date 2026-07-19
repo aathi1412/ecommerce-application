@@ -6,10 +6,11 @@ import lombok.Builder;
 
 @Builder
 public record UserResponse(
+        Long id,
         String firstName,
         String lastName,
         String email,
         String phone,
         Role role,
-        Address address
+        AddressDTO address
 ) {}
