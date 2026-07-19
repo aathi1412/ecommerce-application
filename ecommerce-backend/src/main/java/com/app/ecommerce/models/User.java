@@ -27,6 +27,7 @@ public class User {
 
     private String password;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     private Role role = Role.USER;
 
@@ -40,4 +41,13 @@ public class User {
 
     @UpdateTimestamp
     private Instant UpdatedAt;
+
+
+    public void setAddress(Address address){
+        this.address = address;
+
+        if(this.address != null){
+            address.setUser(this);
+        }
+    }
 }
