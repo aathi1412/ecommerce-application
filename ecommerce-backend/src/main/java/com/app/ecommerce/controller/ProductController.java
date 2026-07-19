@@ -1,8 +1,8 @@
 package com.app.ecommerce.controller;
 
+import com.app.ecommerce.dto.ApiResponse;
 import com.app.ecommerce.dto.products.ProductRequest;
 import com.app.ecommerce.dto.products.ProductResponse;
-import com.app.ecommerce.models.Product;
 import com.app.ecommerce.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,8 +19,24 @@ public class ProductController {
     private final ProductService productService;
 
     @GetMapping
-    public ResponseEntity<List<Product>> getAllProducts(){
-        return ResponseEntity.ok().build();
+    public ResponseEntity<List<ProductResponse>> getAllProducts(){
+        List<ProductResponse> responses = productService.getAllProducts();
+        return ResponseEntity
+                .ok(responses);
+    }
+
+    @GetMapping("/active")
+    public ResponseEntity<List<ProductResponse>> getActiveProducts(){
+        List<ProductResponse> responses = productService.getActiveProducts();
+        return ResponseEntity
+                .ok(responses);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ProductResponse> getProductById(@PathVariable Long id){
+        ProductResponse response = productService.getProductById(id);
+        return ResponseEntity
+                .ok(response);
     }
 
     @PostMapping("/add")
@@ -31,6 +47,25 @@ public class ProductController {
                 .body(response);
     }
 
+    @PutMapping("/update/{id}")
+    public ResponseEntity<ProductResponse> updateProduct(@PathVariable Long id, @RequestBody ProductRequest request){
+        ProductResponse response = productService.updateProduct(id, request);
+        return ResponseEntity
+                .ok()
+                .body(response);
+    }
 
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<ApiResponse> deleteProduct(@PathVariable Long id){
+        ApiResponse response = productService.deleteProductById(id);
+        return ResponseEntity
+                .ok(response);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<ProductResponse>> searchProducts(@RequestParam String keyword){
+        List<ProductResponse> responses = productService.searchProducts(keyword);
+        return ResponseEntity.ok(responses);
+    }
 
 }
