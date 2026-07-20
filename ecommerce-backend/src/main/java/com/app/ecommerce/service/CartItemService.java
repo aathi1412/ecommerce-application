@@ -2,7 +2,13 @@ package com.app.ecommerce.service;
 
 import com.app.ecommerce.dto.ApiResponse;
 import com.app.ecommerce.dto.cart.CartItemRequest;
+import com.app.ecommerce.dto.cart.CartItemResponse;
+import com.app.ecommerce.dto.products.ProductResponse;
+import com.app.ecommerce.dto.user.UserResponse;
 import com.app.ecommerce.exceptions.*;
+import com.app.ecommerce.exceptions.cart.CartItemNotFoundException;
+import com.app.ecommerce.exceptions.cart.InsufficientStockException;
+import com.app.ecommerce.exceptions.cart.OutOfStockException;
 import com.app.ecommerce.models.CartItem;
 import com.app.ecommerce.models.Product;
 import com.app.ecommerce.models.User;
@@ -17,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -27,6 +34,13 @@ public class CartItemService {
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
 
+
+    public List<CartItemResponse> getAllCartItems(Long userId) {
+        User user = getUser(userId);
+        return cartItemRepository.findByUser(user).stream()
+                .map(this::mapToCartItemResponse)
+                .toList();
+    }
 
     @Transactional
     public ApiResponse addToCart(Long userId, CartItemRequest request) {
@@ -59,7 +73,7 @@ public class CartItemService {
                                 cartItemRepository.save(cartItem);
                         });
 
-        return buildApiResponse(HttpStatus.OK, "Successfully added cart item");
+        return buildApiResponse(HttpStatus.CREATED, "Successfully added cart item");
     }
 
     @Transactional
@@ -83,6 +97,15 @@ public class CartItemService {
         );
 
         return buildApiResponse(HttpStatus.OK, "Successfully updated cart item");
+    }
+
+    @Transactional
+    public ApiResponse deleteCartItem(Long userId, Long productId) {
+        Product product = getProduct(productId);
+        User user = getUser(userId);
+
+        cartItemRepository.deleteByUserAndProduct(user, product);
+        return  buildApiResponse(HttpStatus.OK, "Successfully deleted cart item");
     }
 
     public Product getProduct(Long productId) {
@@ -122,4 +145,25 @@ public class CartItemService {
                 .message(message)
                 .build();
     }
+
+    public CartItemResponse mapToCartItemResponse(CartItem cartItem) {
+        return CartItemResponse.builder()
+                .product(ProductResponse.builder()
+                        .name(cartItem.getProduct().getName())
+                        .description(cartItem.getProduct().getDescription())
+                        .category(cartItem.getProduct().getCategory())
+                        .stockQuantity(cartItem.getQuantity())
+                        .price(cartItem.getProduct().getPrice())
+                        .active(cartItem.getProduct().getActive())
+                        .price(cartItem.getProduct().getPrice())
+                        .build())
+                .user(UserResponse.builder()
+                        .firstName(cartItem.getUser().getFirstName())
+                        .lastName(cartItem.getUser().getLastName())
+                        .build())
+                .quantity(cartItem.getQuantity())
+                .price(cartItem.getPrice())
+                .build();
+    }
+
 }
