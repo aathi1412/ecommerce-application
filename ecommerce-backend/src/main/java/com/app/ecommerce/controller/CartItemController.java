@@ -4,7 +4,6 @@ package com.app.ecommerce.controller;
 import com.app.ecommerce.dto.ApiResponse;
 import com.app.ecommerce.dto.cart.CartItemRequest;
 import com.app.ecommerce.dto.cart.CartItemResponse;
-import com.app.ecommerce.models.CartItem;
 import com.app.ecommerce.service.CartItemService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
