@@ -8,12 +8,14 @@ import com.app.ecommerce.models.Address;
 import com.app.ecommerce.models.User;
 import com.app.ecommerce.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -44,6 +46,14 @@ public class UserService {
     public String  updateUser(UserRequest request){
         mapRequestToUser(request);
         return "User Updated Successfully";
+    }
+
+    public User getUser(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> {
+                    log.warn("User not found for id {} while updating cart", userId);
+                    return new UserNotFoundException("User not found");
+                });
     }
 
     public UserResponse mapUserToUserResponse(User user){
