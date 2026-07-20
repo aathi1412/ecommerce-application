@@ -1,6 +1,9 @@
 package com.app.ecommerce.exceptions;
 
 import com.app.ecommerce.dto.ErrorResponse;
+import com.app.ecommerce.exceptions.cart.CartItemNotFoundException;
+import com.app.ecommerce.exceptions.cart.InsufficientStockException;
+import com.app.ecommerce.exceptions.cart.OutOfStockException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
