@@ -12,9 +12,8 @@ import com.app.ecommerce.exceptions.cart.OutOfStockException;
 import com.app.ecommerce.models.CartItem;
 import com.app.ecommerce.models.Product;
 import com.app.ecommerce.models.User;
-import com.app.ecommerce.repository.CartItemRepository;
+import com.app.ecommerce.repository.CartRepository;
 import com.app.ecommerce.repository.ProductRepository;
-import com.app.ecommerce.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -28,27 +27,32 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class CartItemService {
+public class CartService {
 
-    private final CartItemRepository cartItemRepository;
+    private final CartRepository cartRepository;
     private final ProductRepository productRepository;
-    private final UserRepository userRepository;
+    private  final UserService userService;
 
 
-    public List<CartItemResponse> getAllCartItems(Long userId) {
-        User user = getUser(userId);
-        return cartItemRepository.findByUser(user).stream()
+    public List<CartItemResponse> getCartItemResponse(Long userId) {
+        User user = userService.getUser(userId);
+        return cartRepository.findByUser(user).stream()
                 .map(this::mapToCartItemResponse)
                 .toList();
+    }
+
+    public List<CartItem> getCartItems(Long userId) {
+        User user = userService.getUser(userId);
+        return cartRepository.findByUser(user);
     }
 
     @Transactional
     public ApiResponse addToCart(Long userId, CartItemRequest request) {
         Product product = getProduct(request.productId());
 
-        User user = getUser(userId);
+        User user = userService.getUser(userId);
 
-        cartItemRepository.findByUserAndProduct(user, product).
+        cartRepository.findByUserAndProduct(user, product).
                 ifPresentOrElse(
                 cartItem -> {
                             int newQuantity = cartItem.getQuantity() + request.quantity();
@@ -70,7 +74,7 @@ public class CartItemService {
                                                     .multiply(BigDecimal.valueOf(request.quantity())))
                                             .build();
                                 log.info("Added new product {} to cart for user {}", product.getId(), userId);
-                                cartItemRepository.save(cartItem);
+                                cartRepository.save(cartItem);
                         });
 
         return buildApiResponse(HttpStatus.CREATED, "Successfully added cart item");
@@ -80,11 +84,11 @@ public class CartItemService {
     public ApiResponse updateCartItemQuantity(Long userId, CartItemRequest request) {
         Product product = getProduct(request.productId());
 
-        User user = getUser(userId);
+        User user = userService.getUser(userId);
 
         validateStockQuantity(product, request.quantity());
 
-        CartItem cartItem = cartItemRepository
+        CartItem cartItem = cartRepository
                     .findByUserAndProduct(user, product)
                     .orElseThrow(() -> {
                         log.warn("Cart item not found for user {} and product {}", userId, product.getId());
@@ -99,12 +103,16 @@ public class CartItemService {
         return buildApiResponse(HttpStatus.OK, "Successfully updated cart item");
     }
 
-    @Transactional
-    public ApiResponse deleteCartItem(Long userId, Long productId) {
-        Product product = getProduct(productId);
-        User user = getUser(userId);
+    public void clearCart(User user) {
+        cartRepository.deleteByUser(user);
+    }
 
-        cartItemRepository.deleteByUserAndProduct(user, product);
+    @Transactional
+    public ApiResponse removeFromCart(Long userId, Long productId) {
+        Product product = getProduct(productId);
+        User user = userService.getUser(userId);
+
+        cartRepository.deleteByUserAndProduct(user, product);
         return  buildApiResponse(HttpStatus.OK, "Successfully deleted cart item");
     }
 
@@ -113,14 +121,6 @@ public class CartItemService {
                 .orElseThrow(() -> {
                     log.warn("Product not found with id {}", productId);
                     return new ProductNotFoundException("Product not found");
-                });
-    }
-
-    public User getUser(Long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> {
-                    log.warn("User not found for id {} while updating cart", userId);
-                    return new UserNotFoundException("User not found");
                 });
     }
 
@@ -165,5 +165,6 @@ public class CartItemService {
                 .price(cartItem.getPrice())
                 .build();
     }
+
 
 }
