@@ -1,4 +1,4 @@
-CREATE TABLE `order`
+CREATE TABLE `orders`
 (
     id           BIGINT AUTO_INCREMENT NOT NULL,
     user_id      BIGINT                NOT NULL,
@@ -20,10 +20,10 @@ CREATE TABLE order_item
 );
 
 ALTER TABLE order_item
-    ADD CONSTRAINT FK_ORDERITEM_ON_ORDER FOREIGN KEY (order_id) REFERENCES `order` (id);
+    ADD CONSTRAINT FK_ORDERITEM_ON_ORDER FOREIGN KEY (order_id) REFERENCES `orders` (id);
 
 ALTER TABLE order_item
     ADD CONSTRAINT FK_ORDERITEM_ON_PRODUCT FOREIGN KEY (product_id) REFERENCES products (id);
 
-ALTER TABLE `order`
+ALTER TABLE `orders`
     ADD CONSTRAINT FK_ORDER_ON_USER FOREIGN KEY (user_id) REFERENCES user (id);
