@@ -1,14 +1,15 @@
 package com.app.ecommerce.service;
 
 import com.app.ecommerce.dto.ApiResponse;
-import com.app.ecommerce.dto.cart.CartItemRequest;
 import com.app.ecommerce.dto.cart.CartItemResponse;
-import com.app.ecommerce.dto.products.ProductResponse;
-import com.app.ecommerce.dto.user.UserResponse;
+import com.app.ecommerce.dto.cart.CartRequest;
+import com.app.ecommerce.dto.cart.CartResponse;
 import com.app.ecommerce.exceptions.*;
 import com.app.ecommerce.exceptions.cart.CartItemNotFoundException;
+import com.app.ecommerce.exceptions.cart.CartNotFoundException;
 import com.app.ecommerce.exceptions.cart.InsufficientStockException;
 import com.app.ecommerce.exceptions.cart.OutOfStockException;
+import com.app.ecommerce.models.Cart;
 import com.app.ecommerce.models.CartItem;
 import com.app.ecommerce.models.Product;
 import com.app.ecommerce.models.User;
@@ -34,71 +35,84 @@ public class CartService {
     private  final UserService userService;
 
 
-    public List<CartItemResponse> getCartItemResponse(Long userId) {
+    public List<CartResponse> getCartResponse(Long userId) {
         User user = userService.getUser(userId);
         return cartRepository.findByUser(user).stream()
-                .map(this::mapToCartItemResponse)
+                .map(this::mapToCartResponse)
                 .toList();
     }
 
-    public List<CartItem> getCartItems(Long userId) {
+    public Cart getCartItems(Long userId) {
         User user = userService.getUser(userId);
-        return cartRepository.findByUser(user);
+        return cartRepository.findByUser(user)
+                .orElseThrow(() -> new CartNotFoundException("cart not found"));
     }
 
     @Transactional
-    public ApiResponse addToCart(Long userId, CartItemRequest request) {
-        Product product = getProduct(request.productId());
+    public ApiResponse addToCart(Long userId, CartRequest request) {
 
         User user = userService.getUser(userId);
+        Product product = getProduct(request.productId());
 
-        cartRepository.findByUserAndProduct(user, product).
-                ifPresentOrElse(
-                cartItem -> {
-                            int newQuantity = cartItem.getQuantity() + request.quantity();
-                            validateStockQuantity(product, newQuantity);
+        Cart cart = cartRepository.findByUser(user)
+                .orElseGet(() -> Cart.builder()
+                        .user(user)
+                        .build());
 
-                            cartItem.setQuantity(newQuantity);
-                            cartItem.setPrice(product.getPrice()
-                                    .multiply(BigDecimal.valueOf(newQuantity)));
+        CartItem existingItem = cart.getCartItems().stream()
+                .filter(item -> item.getProduct().getId().equals(request.productId()))
+                .findFirst()
+                .orElse(null);
 
-                            log.info("new quantity added to cart item for user {}, product id {}", userId, product.getId());
-                        },
-                        () -> {
-                            validateStockQuantity(product, request.quantity());
-                                CartItem cartItem = CartItem.builder()
-                                            .user(user)
-                                            .product(product)
-                                            .quantity(request.quantity())
-                                            .price(product.getPrice()
-                                                    .multiply(BigDecimal.valueOf(request.quantity())))
-                                            .build();
-                                log.info("Added new product {} to cart for user {}", product.getId(), userId);
-                                cartRepository.save(cartItem);
-                        });
+        if (existingItem != null) {
+
+            int newQuantity = existingItem.getQuantity() + request.quantity();
+
+            validateStockQuantity(product, newQuantity);
+
+            existingItem.setQuantity(newQuantity);
+
+        } else {
+
+            validateStockQuantity(product, request.quantity());
+
+            cart.getCartItems().add(
+                    CartItem.builder()
+                            .product(product)
+                            .cart(cart)
+                            .quantity(request.quantity())
+                            .price(product.getPrice())
+                            .build()
+            );
+        }
+
+        cartRepository.save(cart);
+        log.info("Added new product {} to cart for user {}", product.getId(), userId);
 
         return buildApiResponse(HttpStatus.CREATED, "Successfully added cart item");
     }
 
     @Transactional
-    public ApiResponse updateCartItemQuantity(Long userId, CartItemRequest request) {
+    public ApiResponse updateCartItemQuantity(Long userId, CartRequest request) {
         Product product = getProduct(request.productId());
 
         User user = userService.getUser(userId);
 
         validateStockQuantity(product, request.quantity());
 
-        CartItem cartItem = cartRepository
-                    .findByUserAndProduct(user, product)
+        Cart cart = cartRepository.findByUser(user)
                     .orElseThrow(() -> {
                         log.warn("Cart item not found for user {} and product {}", userId, product.getId());
-                        return new CartItemNotFoundException("Cart item not found");
+                        return new CartNotFoundException("Cart item not found");
                     });
 
+        CartItem cartItem = cart.getCartItems().stream()
+                        .filter(item ->  item.getProduct().getId().equals(request.productId()))
+                        .findFirst()
+                        .orElseThrow(() -> new CartNotFoundException("Cart item not found"));
+
         cartItem.setQuantity(request.quantity());
-        cartItem.setPrice(
-                product.getPrice().multiply(BigDecimal.valueOf(request.quantity()))
-        );
+        cartItem.setPrice(product.getPrice());
 
         return buildApiResponse(HttpStatus.OK, "Successfully updated cart item");
     }
@@ -108,11 +122,18 @@ public class CartService {
     }
 
     @Transactional
-    public ApiResponse removeFromCart(Long userId, Long productId) {
-        Product product = getProduct(productId);
+    public ApiResponse removeProductFromCart(Long userId, Long productId) {
         User user = userService.getUser(userId);
 
-        cartRepository.deleteByUserAndProduct(user, product);
+        Cart cart = cartRepository.findByUser(user)
+                .orElseThrow(() -> new CartNotFoundException("Cart not found"));
+
+        boolean removed = cart.getCartItems().removeIf(item -> item.getProduct().getId().equals(productId));
+
+        if(!removed) {
+            throw  new CartItemNotFoundException("Cart item not found");
+        }
+
         return  buildApiResponse(HttpStatus.OK, "Successfully deleted cart item");
     }
 
@@ -146,24 +167,42 @@ public class CartService {
                 .build();
     }
 
+    public CartResponse mapToCartResponse(Cart cart) {
+        return CartResponse.builder()
+                .cartId(cart.getId())
+                .cartItems(cart.getCartItems().stream()
+                        .map(this::mapToCartItemResponse)
+                        .toList()
+                )
+                .totalPrice(getTotalPrice(cart))
+                .totalQuantity(getTotalCartItems(cart))
+                .totalProducts(cart.getCartItems().size())
+                .createdAt(cart.getCreatedAt())
+                .build();
+    }
+
     public CartItemResponse mapToCartItemResponse(CartItem cartItem) {
         return CartItemResponse.builder()
-                .product(ProductResponse.builder()
-                        .name(cartItem.getProduct().getName())
-                        .description(cartItem.getProduct().getDescription())
-                        .category(cartItem.getProduct().getCategory())
-                        .stockQuantity(cartItem.getQuantity())
-                        .price(cartItem.getProduct().getPrice())
-                        .active(cartItem.getProduct().getActive())
-                        .price(cartItem.getProduct().getPrice())
-                        .build())
-                .user(UserResponse.builder()
-                        .firstName(cartItem.getUser().getFirstName())
-                        .lastName(cartItem.getUser().getLastName())
-                        .build())
-                .quantity(cartItem.getQuantity())
+                .cartItemId(cartItem.getId())
+                .productId(cartItem.getProduct().getId())
+                .productName(cartItem.getProduct().getName())
+                .productImage(cartItem.getProduct().getImageUrl())
                 .price(cartItem.getPrice())
+                .quantity(cartItem.getQuantity())
+                .totalPrice(cartItem.getPrice().multiply(BigDecimal.valueOf(cartItem.getQuantity())))
                 .build();
+    }
+
+    public BigDecimal getTotalPrice(Cart  cart) {
+        return cart.getCartItems().stream()
+                .map(cartItem -> cartItem.getPrice().multiply(new BigDecimal(cartItem.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    public Integer getTotalCartItems(Cart  cart) {
+        return cart.getCartItems().stream()
+                .map(CartItem::getQuantity)
+                .reduce(0, Integer::sum);
     }
 
 
