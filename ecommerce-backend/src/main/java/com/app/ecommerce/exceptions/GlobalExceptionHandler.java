@@ -2,6 +2,7 @@ package com.app.ecommerce.exceptions;
 
 import com.app.ecommerce.dto.ErrorResponse;
 import com.app.ecommerce.exceptions.cart.CartItemNotFoundException;
+import com.app.ecommerce.exceptions.cart.CartNotFoundException;
 import com.app.ecommerce.exceptions.cart.InsufficientStockException;
 import com.app.ecommerce.exceptions.cart.OutOfStockException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -41,9 +42,22 @@ public class GlobalExceptionHandler {
                 );
     }
 
+    @ExceptionHandler(CartNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleCartNotFoundException(CartNotFoundException ex,
+                                                                         HttpServletRequest request) {
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(buildErrorResponse(
+                                ex.getMessage(),
+                                HttpStatus.NOT_FOUND,
+                                request
+                        )
+                );
+    }
+
     @ExceptionHandler(CartItemNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleCartItemNotFoundException(CartItemNotFoundException ex,
-                                                                        HttpServletRequest request) {
+                                                                         HttpServletRequest request) {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
                 .body(buildErrorResponse(
