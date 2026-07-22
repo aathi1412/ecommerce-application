@@ -1,7 +1,7 @@
 package com.app.ecommerce.dto.cart;
 
 
-public record CartItemRequest(
+public record CartRequest(
         Long productId,
         Integer quantity
 ) {}
