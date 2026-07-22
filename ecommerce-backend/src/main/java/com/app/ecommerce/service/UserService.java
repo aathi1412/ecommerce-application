@@ -44,7 +44,20 @@ public class UserService {
 
     @Transactional
     public String  updateUser(UserRequest request){
-        mapRequestToUser(request);
+        User user = userRepository.findByEmail(request.email())
+                .orElseThrow(() -> new UserNotFoundException("User Not Found"));
+
+        user.setFirstName(request.firstName());
+        user.setLastName(request.lastName());
+        user.setPhone(request.phone());
+
+        Address address = request.address();
+        address.setStreet(request.address().getStreet());
+        address.setCity(request.address().getCity());
+        address.setState(request.address().getState());
+        address.setCountry(request.address().getCountry());
+        address.setZipcode(request.address().getZipcode());
+
         return "User Updated Successfully";
     }
 
