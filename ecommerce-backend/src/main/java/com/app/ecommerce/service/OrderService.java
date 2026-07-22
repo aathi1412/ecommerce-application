@@ -1,13 +1,9 @@
 package com.app.ecommerce.service;
 
 import com.app.ecommerce.dto.orders.OrderItemDTO;
-import com.app.ecommerce.dto.orders.OrderRequest;
 import com.app.ecommerce.dto.orders.OrderResponse;
 import com.app.ecommerce.enums.OrderStatus;
-import com.app.ecommerce.models.CartItem;
-import com.app.ecommerce.models.Order;
-import com.app.ecommerce.models.OrderItem;
-import com.app.ecommerce.models.User;
+import com.app.ecommerce.models.*;
 import com.app.ecommerce.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,9 +21,9 @@ public class OrderService {
 
     public OrderResponse createOrder(Long userId) {
         User user = userService.getUser(userId);
-        List<CartItem> cartItems = cartService.getCartItems(userId);
+        Cart cart = cartService.getCartItems(userId);
 
-        BigDecimal totalPrice = cartItems.stream()
+        BigDecimal totalPrice = cart.getCartItems().stream()
                 .map(CartItem::getPrice)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
@@ -37,7 +33,7 @@ public class OrderService {
                 .orderStatus(OrderStatus.CONFIRMED)
                 .build();
 
-        List<OrderItem> orderItems = cartItems.stream()
+        List<OrderItem> orderItems = cart.getCartItems().stream()
                 .map(items -> OrderItem.builder()
                         .product(items.getProduct())
                         .order(order)
