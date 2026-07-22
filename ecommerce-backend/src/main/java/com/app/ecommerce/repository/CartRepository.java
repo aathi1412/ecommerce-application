@@ -1,5 +1,6 @@
 package com.app.ecommerce.repository;
 
+import com.app.ecommerce.models.Cart;
 import com.app.ecommerce.models.CartItem;
 import com.app.ecommerce.models.Product;
 import com.app.ecommerce.models.User;
@@ -10,12 +11,9 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface CartRepository extends JpaRepository<CartItem,Long> {
-    Optional<CartItem> findByUserAndProduct(User user, Product product);
+public interface CartRepository extends JpaRepository<Cart,Long> {
 
-    void deleteByUserAndProduct(User user, Product product);
-
-    List<CartItem> findByUser(User user);
+    Optional<Cart> findByUser(User user);
 
     void deleteByUser(User user);
 }
