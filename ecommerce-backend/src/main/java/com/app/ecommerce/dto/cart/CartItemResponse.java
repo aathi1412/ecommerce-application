@@ -1,16 +1,22 @@
 package com.app.ecommerce.dto.cart;
 
-import com.app.ecommerce.dto.products.ProductResponse;
-import com.app.ecommerce.dto.user.UserResponse;
 import lombok.Builder;
 
 import java.math.BigDecimal;
 
 @Builder
 public record CartItemResponse(
-        ProductResponse product,
-        UserResponse user,
+        Long cartItemId,
+
+        Long productId,
+
+        String productName,
+
+        String productImage,
+
+        BigDecimal price,
+
         Integer quantity,
-        BigDecimal price
-) {
-}
+
+        BigDecimal totalPrice
+) {}
