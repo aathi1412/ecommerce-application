@@ -2,8 +2,8 @@ package com.app.ecommerce.controller;
 
 
 import com.app.ecommerce.dto.ApiResponse;
-import com.app.ecommerce.dto.cart.CartItemRequest;
-import com.app.ecommerce.dto.cart.CartItemResponse;
+import com.app.ecommerce.dto.cart.CartRequest;
+import com.app.ecommerce.dto.cart.CartResponse;
 import com.app.ecommerce.service.CartService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,15 +19,15 @@ public class CartController {
     private final CartService cartService;
 
     @GetMapping
-    public ResponseEntity<List<CartItemResponse>> getAllCartItems(@RequestParam Long userId){
-        List<CartItemResponse> cartItems = cartService.getCartItemResponse(userId);
+    public ResponseEntity<List<CartResponse>> getAllCartItems(@RequestParam Long userId){
+        List<CartResponse> cartItems = cartService.getCartResponse(userId);
         return ResponseEntity
                 .ok(cartItems);
     }
 
     @PostMapping
     public ResponseEntity<ApiResponse> addToCart(@RequestParam Long userId,
-                                          @RequestBody CartItemRequest request) {
+                                          @RequestBody CartRequest request) {
         ApiResponse response = cartService.addToCart(userId, request);
         return  ResponseEntity
                 .ok(response);
@@ -35,16 +35,16 @@ public class CartController {
 
     @PutMapping("/items")
     public ResponseEntity<ApiResponse> updateCartQuantity(@RequestParam Long userId,
-                                          @RequestBody CartItemRequest request) {
+                                          @RequestBody CartRequest request) {
         ApiResponse response = cartService.updateCartItemQuantity(userId, request);
         return  ResponseEntity
                 .ok(response);
     }
 
     @DeleteMapping("/items")
-    public ResponseEntity<ApiResponse> removeFromCart(@RequestParam Long userId,
+    public ResponseEntity<ApiResponse> removeProductFromCart(@RequestParam Long userId,
                                                       @RequestParam Long productId) {
-        ApiResponse response = cartService.removeFromCart(userId, productId);
+        ApiResponse response = cartService.removeProductFromCart(userId, productId);
 
         return  ResponseEntity
                 .ok(response);
