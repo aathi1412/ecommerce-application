@@ -7,6 +7,7 @@ import com.app.ecommerce.models.*;
 import com.app.ecommerce.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -19,6 +20,7 @@ public class OrderService {
     private final CartService cartService;
     private final UserService userService;
 
+    @Transactional
     public OrderResponse createOrder(Long userId) {
         User user = userService.getUser(userId);
         Cart cart = cartService.getCartItems(userId);
@@ -53,6 +55,7 @@ public class OrderService {
 
     private OrderResponse mapToOrderResponse(Order order) {
         return  OrderResponse.builder()
+                    .id(order.getId())
                     .totalAmount(order.getTotalAmount())
                     .status(order.getOrderStatus())
                     .OrderItems(order.getOrderItems().stream()
