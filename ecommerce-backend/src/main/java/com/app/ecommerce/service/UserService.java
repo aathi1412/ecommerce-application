@@ -51,7 +51,7 @@ public class UserService {
         user.setLastName(request.lastName());
         user.setPhone(request.phone());
 
-        Address address = request.address();
+        Address address = user.getAddress();
         address.setStreet(request.address().getStreet());
         address.setCity(request.address().getCity());
         address.setState(request.address().getState());
