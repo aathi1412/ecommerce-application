@@ -21,11 +21,11 @@ public class OrderService {
     private final CartService cartService;
     private final UserService userService;
 
-    public OrderResponse getOrders(Long userId) {
-        Order order = orderRepository.findByUserId(userId)
-                .orElseThrow(() -> new OrderNotFoundException("order not found"));
+    public List<OrderResponse> getOrders(Long userId) {
 
-        return mapToOrderResponse(order);
+        return orderRepository.findByUserId(userId).stream()
+                .map(this::mapToOrderResponse)
+                .toList();
     }
 
     @Transactional
