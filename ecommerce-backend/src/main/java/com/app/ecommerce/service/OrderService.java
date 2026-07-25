@@ -3,6 +3,7 @@ package com.app.ecommerce.service;
 import com.app.ecommerce.dto.orders.OrderItemDTO;
 import com.app.ecommerce.dto.orders.OrderResponse;
 import com.app.ecommerce.enums.OrderStatus;
+import com.app.ecommerce.exceptions.OrderNotFoundException;
 import com.app.ecommerce.models.*;
 import com.app.ecommerce.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,13 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final CartService cartService;
     private final UserService userService;
+
+    public OrderResponse getOrders(Long userId) {
+        Order order = orderRepository.findByUserId(userId)
+                .orElseThrow(() -> new OrderNotFoundException("order not found"));
+
+        return mapToOrderResponse(order);
+    }
 
     @Transactional
     public OrderResponse createOrder(Long userId) {
