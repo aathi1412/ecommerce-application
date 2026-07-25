@@ -42,6 +42,19 @@ public class GlobalExceptionHandler {
                 );
     }
 
+    @ExceptionHandler(OrderNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleOrderNotFoundException(OrderNotFoundException ex,
+                                                                        HttpServletRequest request) {
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(buildErrorResponse(
+                                ex.getMessage(),
+                                HttpStatus.NOT_FOUND,
+                                request
+                        )
+                );
+    }
+
     @ExceptionHandler(CartNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleCartNotFoundException(CartNotFoundException ex,
                                                                          HttpServletRequest request) {
