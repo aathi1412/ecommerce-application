@@ -1,6 +1,5 @@
 package com.app.ecommerce.controller;
 
-import com.app.ecommerce.dto.orders.OrderRequest;
 import com.app.ecommerce.dto.orders.OrderResponse;
 import com.app.ecommerce.service.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -14,10 +13,11 @@ public class OrderController {
 
     private final OrderService orderService;
 
-    @GetMapping
-    public ResponseEntity<OrderResponse> getOrders() {
+    @GetMapping("/{userId}")
+    public ResponseEntity<OrderResponse> getOrders(@PathVariable Long userId) {
+        OrderResponse response = orderService.getOrders(userId);
         return ResponseEntity
-                .ok(OrderResponse.builder().build());
+                .ok(response);
     }
 
     @PostMapping("/{userId}")
