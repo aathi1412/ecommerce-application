@@ -32,13 +32,23 @@ services:
       MYSQL_PASSWORD: ecommerce
 
     ports:
-      - "3306:3306"
+      - "3307:3306"
 
     volumes:
       - mysql-data:/var/lib/mysql
 
     networks:
       - ecommerce
+
+  cloudbeaver:
+    image: dbeaver/cloudbeaver:latest
+    container_name: cloudbeaver
+
+    ports:
+      - "8978:8978"
+
+    depends_on:
+      - mysql
 
 volumes:
   mysql-data:
