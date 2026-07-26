@@ -1,0 +1,414 @@
+{
+  "info": {
+    "_postman_id": "83a4bd70-2184-4fe2-a709-6b0c04c8915b",
+    "name": "ecommerce",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "56160841",
+    "_collection_link": "https://go.postman.co/collection/56160841-83a4bd70-2184-4fe2-a709-6b0c04c8915b?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "products",
+      "item": [
+        {
+          "name": "add product",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "// {\r\n//     \"name\": \"Asus rog\",\r\n//     \"description\": \"laptop\",\r\n//     \"price\": \"150000\",\r\n//     \"stockQuantity\": \"20\",\r\n//     \"category\": \"electronics\",\r\n//     \"imageUrl\": \"https://laptops-asus\"\r\n// }\r\n{\r\n    \"name\": \"iphone 16 pro\",\r\n    \"description\": \"A stylish and modern phone\",\r\n    \"price\": \"150000\",\r\n    \"stockQuantity\": \"20\",\r\n    \"category\": \"Electronics\",\r\n    \"imageUrl\": \"https://electronics/iphone\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/products/add",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "products",
+                "add"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "update product",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\": \"Asus rog\",\r\n    \"description\": \"laptop\",\r\n    \"price\": \"150000\",\r\n    \"stockQuantity\": \"20\",\r\n    \"category\": \"electronics\",\r\n    \"imageUrl\": \"https://laptops-asus\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/products/update/1",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "products",
+                "update",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get all products",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\": \"cricket ball\",\r\n    \"description\": \"A super cricket ball\",\r\n    \"price\": \"120\",\r\n    \"stockQuantity\": \"20\",\r\n    \"category\": \"Toys\",\r\n    \"imageUrl\": \"https://cricket-ball\"\r\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/products",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "products"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "search products",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\": \"cricket ball\",\r\n    \"description\": \"A super cricket ball\",\r\n    \"price\": \"120\",\r\n    \"stockQuantity\": \"20\",\r\n    \"category\": \"Toys\",\r\n    \"imageUrl\": \"https://cricket-ball\"\r\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/products/search?keyword=rog",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "products",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "keyword",
+                  "value": "rog"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "users",
+      "item": [
+        {
+          "name": "get users",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/users",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "users"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get 1 user",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/users/zoro@gmail.com",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "users",
+                "zoro@gmail.com"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "create user",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"firstName\": \"Roronoa\",\r\n    \"lastName\": \"Zoro\",\r\n    \"phone\": \"9944735624\",\r\n    \"email\": \"zoro@gmail.com\",\r\n    \"password\": \"Zoro@2004\",\r\n    \"address\": {\r\n        \"street\": \"Pk Street\",\r\n        \"city\": \"TR Puram\",\r\n        \"state\": \"TN\",\r\n        \"country\": \"India\",\r\n        \"zipcode\": \"612201\"\r\n    }\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/users/create",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "users",
+                "create"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "update user",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"firstName\": \"Roronoa\",\r\n    \"lastName\": \"Zoro\",\r\n    \"phone\": \"9944735624\",\r\n    \"email\": \"zoro@gmail.com\",\r\n    \"password\": \"Zoro@2004\",\r\n    \"address\": {\r\n        \"street\": \"nothing\",\r\n        \"city\": \"fort\",\r\n        \"state\": \"adam jewels tree\",\r\n        \"country\": \"elbhaf\",\r\n        \"zipcode\": \"612201\"\r\n    }\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/users/update",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "users",
+                "update"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "cart",
+      "item": [
+        {
+          "name": "add to cart",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"productId\": 1,\r\n    \"quantity\": 1\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/cart?userId=1",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "cart"
+              ],
+              "query": [
+                {
+                  "key": "userId",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get cart items",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"productId\": 3,\r\n    \"quantity\": 4\r\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/cart?userId=1",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "cart"
+              ],
+              "query": [
+                {
+                  "key": "userId",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "delete from cart",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/cart/items?userId=1&productId=1",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "cart",
+                "items"
+              ],
+              "query": [
+                {
+                  "key": "userId",
+                  "value": "1"
+                },
+                {
+                  "key": "productId",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "orders",
+      "item": [
+        {
+          "name": "create order",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/orders/1",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "orders",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get orders",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/orders/1",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "orders",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
