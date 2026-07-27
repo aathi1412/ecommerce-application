@@ -50,8 +50,15 @@ services:
     depends_on:
       - mysql
 
+    networks:
+      - ecommerce
+
+    volumes:
+        - cloudbeaver-data:/opt/cloudbeaver/workspace
+
 volumes:
   mysql-data:
+  cloudbeaver-data:
 
 networks:
   ecommerce:
