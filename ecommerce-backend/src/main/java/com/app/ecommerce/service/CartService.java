@@ -36,14 +36,14 @@ public class CartService {
 
 
     public List<CartResponse> getCartResponse(Long userId) {
-        User user = userService.getUser(userId);
+        User user = userService.getUserById(userId);
         return cartRepository.findByUser(user).stream()
                 .map(this::mapToCartResponse)
                 .toList();
     }
 
     public Cart getCartItems(Long userId) {
-        User user = userService.getUser(userId);
+        User user = userService.getUserById(userId);
         return cartRepository.findByUser(user)
                 .orElseThrow(() -> new CartNotFoundException("cart not found"));
     }
@@ -51,7 +51,7 @@ public class CartService {
     @Transactional
     public ApiResponse addToCart(Long userId, CartRequest request) {
 
-        User user = userService.getUser(userId);
+        User user = userService.getUserById(userId);
         Product product = getProduct(request.productId());
 
         Cart cart = cartRepository.findByUser(user)
@@ -96,7 +96,7 @@ public class CartService {
     public ApiResponse updateCartItemQuantity(Long userId, CartRequest request) {
         Product product = getProduct(request.productId());
 
-        User user = userService.getUser(userId);
+        User user = userService.getUserById(userId);
 
         validateStockQuantity(product, request.quantity());
 
@@ -123,7 +123,7 @@ public class CartService {
 
     @Transactional
     public ApiResponse removeProductFromCart(Long userId, Long productId) {
-        User user = userService.getUser(userId);
+        User user = userService.getUserById(userId);
 
         Cart cart = cartRepository.findByUser(user)
                 .orElseThrow(() -> new CartNotFoundException("Cart not found"));
