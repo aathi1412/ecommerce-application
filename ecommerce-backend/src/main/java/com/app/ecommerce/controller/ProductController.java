@@ -4,6 +4,7 @@ import com.app.ecommerce.dto.ApiResponse;
 import com.app.ecommerce.dto.products.ProductRequest;
 import com.app.ecommerce.dto.products.ProductResponse;
 import com.app.ecommerce.service.ProductService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,52 +21,47 @@ public class ProductController {
 
     @GetMapping
     public ResponseEntity<List<ProductResponse>> getAllProducts(){
-        List<ProductResponse> responses = productService.getAllProducts();
         return ResponseEntity
-                .ok(responses);
+                .ok(productService.getAllProducts());
     }
 
     @GetMapping("/active")
     public ResponseEntity<List<ProductResponse>> getActiveProducts(){
-        List<ProductResponse> responses = productService.getActiveProducts();
         return ResponseEntity
-                .ok(responses);
+                .ok(productService.getActiveProducts());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ProductResponse> getProductById(@PathVariable Long id){
-        ProductResponse response = productService.getProductById(id);
         return ResponseEntity
-                .ok(response);
+                .ok(productService.getProductById(id));
     }
 
-    @PostMapping("/add")
-    public ResponseEntity<ProductResponse> addProduct(@RequestBody ProductRequest request){
+    @PostMapping
+    public ResponseEntity<ProductResponse> addProduct(@Valid @RequestBody ProductRequest request){
         ProductResponse response = productService.createProduct(request);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(response);
     }
 
-    @PutMapping("/update/{id}")
-    public ResponseEntity<ProductResponse> updateProduct(@PathVariable Long id, @RequestBody ProductRequest request){
-        ProductResponse response = productService.updateProduct(id, request);
+    @PutMapping("/{id}")
+    public ResponseEntity<ProductResponse> updateProduct(@PathVariable Long id, @Valid @RequestBody ProductRequest request){
         return ResponseEntity
-                .ok()
-                .body(response);
+                .ok(productService.updateProduct(id, request));
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse> deleteProduct(@PathVariable Long id){
         ApiResponse response = productService.deleteProductById(id);
         return ResponseEntity
-                .ok(response);
+                .status(HttpStatus.NO_CONTENT)
+                .body(response);
     }
 
     @GetMapping("/search")
     public ResponseEntity<List<ProductResponse>> searchProducts(@RequestParam String keyword){
-        List<ProductResponse> responses = productService.searchProducts(keyword);
-        return ResponseEntity.ok(responses);
+        return ResponseEntity.ok(productService.searchProducts(keyword));
     }
 
 }
