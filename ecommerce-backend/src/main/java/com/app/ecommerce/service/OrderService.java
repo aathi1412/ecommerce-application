@@ -3,7 +3,6 @@ package com.app.ecommerce.service;
 import com.app.ecommerce.dto.orders.OrderItemDTO;
 import com.app.ecommerce.dto.orders.OrderResponse;
 import com.app.ecommerce.enums.OrderStatus;
-import com.app.ecommerce.exceptions.OrderNotFoundException;
 import com.app.ecommerce.models.*;
 import com.app.ecommerce.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +29,7 @@ public class OrderService {
 
     @Transactional
     public OrderResponse createOrder(Long userId) {
-        User user = userService.getUser(userId);
+        User user = userService.getUserById(userId);
         Cart cart = cartService.getCartItems(userId);
 
         BigDecimal totalPrice = cart.getCartItems().stream()
